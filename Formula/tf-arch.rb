@@ -1,8 +1,8 @@
 class TfArch < Formula
   desc "Turn Terraform plans into cloud architecture diagrams (AWS, GCP, Azure)"
   homepage "https://github.com/mchittineni/tf-arch-diagram-generator"
-  url "https://registry.npmjs.org/tf-arch-diagram-generator/-/tf-arch-diagram-generator-1.1.0.tgz"
-  sha256 "86261fd2794c3b1142e61a944c59c1a0bf794e9ce74d1d5bad7f3f62fa8523df"
+  url "https://registry.npmjs.org/tf-arch-diagram-generator/-/tf-arch-diagram-generator-1.2.0.tgz"
+  sha256 "51e5de2d7b992181aa7e223b4dfe0777a6308cfd45224672e1b731d1504aaab1"
   license "MIT"
 
   depends_on "node"
@@ -13,7 +13,7 @@ class TfArch < Formula
   end
 
   test do
-    assert_equal "1.1.0", shell_output("#{bin}/tf-arch --version").strip
+    assert_equal "1.2.0", shell_output("#{bin}/tf-arch --version").strip
 
     (testpath/"plan.json").write <<~JSON
       {
