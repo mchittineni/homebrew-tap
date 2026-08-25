@@ -1,0 +1,32 @@
+name: Homebrew install or upgrade problem
+description: "`brew install mchittineni/tap/<formula>` fails, installs the wrong version, or `brew test` fails."
+labels: [formula]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Only packaging problems belong here. If the tool installs but misbehaves, report it upstream:
+        https://github.com/mchittineni/tf-arch-diagram-generator/issues
+  - type: input
+    id: formula
+    attributes:
+      label: Formula
+      placeholder: tf-arch
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and full output
+      description: Run it again with `--verbose` and paste everything, including the final error.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: "`brew config` and `brew doctor`"
+      description: Paste the output of both. This tells us the OS, architecture and Homebrew version.
+      render: shell
+    validations:
+      required: true
