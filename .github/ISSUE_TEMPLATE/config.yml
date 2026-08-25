@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Bug or feature request in tf-arch itself
+    url: https://github.com/mchittineni/tf-arch-diagram-generator/issues/new/choose
+    about: Diagram output, CLI behaviour, provider coverage — anything that is not about `brew install` — belongs in the upstream project.
+  - name: Security vulnerability
+    url: https://github.com/mchittineni/homebrew-tap/blob/main/SECURITY.md
+    about: Please do not open a public issue; see the security policy.
