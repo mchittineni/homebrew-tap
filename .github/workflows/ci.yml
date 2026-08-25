@@ -1,0 +1,102 @@
+name: CI
+
+# Every formula in this tap is style-checked, audited, built from source and
+# `brew test`ed on macOS (Apple silicon + Intel) and Linux. The same job runs
+# weekly so breakage that happens *around* the formula — a new Node major in
+# homebrew-core, an npm registry change — is noticed before a user hits it.
+#
+# Pushes to Formula/ normally come from the upstream release pipeline
+# (tf-arch-diagram-generator/.github/workflows/publish.yml), so a green run
+# here is the Homebrew leg of every upstream release.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '23 6 * * 1' # Mondays 06:23 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  HOMEBREW_NO_ANALYTICS: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_ENV_HINTS: 1
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
+
+jobs:
+  lint:
+    name: Style and audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Set up Homebrew and tap this checkout
+        id: brew
+        uses: Homebrew/actions/setup-homebrew@a657b8b0cd35d0f65cce41fce9b24cf054b49869 # master
+
+      - name: brew style
+        run: brew style "${{ steps.brew.outputs.tap-name }}"
+
+      - name: brew audit --strict --online
+        run: brew audit --strict --online --tap "${{ steps.brew.outputs.tap-name }}"
+
+  test:
+    name: Install and test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, macos-15-intel, ubuntu-24.04]
+    steps:
+      - name: Set up Homebrew and tap this checkout
+        id: brew
+        uses: Homebrew/actions/setup-homebrew@a657b8b0cd35d0f65cce41fce9b24cf054b49869 # master
+
+      - name: List formulae
+        id: formulae
+        run: |
+          names="$(brew tap-info --json "${{ steps.brew.outputs.tap-name }}" | jq -r '.[0].formula_names[]' | tr '\n' ' ')"
+          test -n "${names// /}" || { echo "::error::No formulae found in the tap" >&2; exit 1; }
+          echo "names=${names}" >> "$GITHUB_OUTPUT"
+          echo "Formulae: ${names}"
+
+      - name: Build from source
+        run: brew install --build-from-source --verbose ${{ steps.formulae.outputs.names }}
+
+      - name: Run the formula tests
+        run: brew test --verbose ${{ steps.formulae.outputs.names }}
+
+      - name: Show what got installed
+        if: always()
+        run: brew list --versions ${{ steps.formulae.outputs.names }} || true
+
+  livecheck:
+    # Fails when the tap lags the upstream release, which is exactly the
+    # failure mode when the upstream publish step is skipped or its token
+    # expires. Scheduled/manual only: a release PR is allowed to be "behind"
+    # for the minutes it takes to merge.
+    name: Formulae track upstream
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Set up Homebrew and tap this checkout
+        id: brew
+        uses: Homebrew/actions/setup-homebrew@a657b8b0cd35d0f65cce41fce9b24cf054b49869 # master
+
+      - name: brew livecheck
+        run: |
+          brew livecheck --tap "${{ steps.brew.outputs.tap-name }}" --json > livecheck.json
+          jq -r '.[] | "\(.formula): \(.version.current) → \(.version.latest) (outdated: \(.version.outdated))"' livecheck.json
+          outdated="$(jq '[.[] | select(.version.outdated == true)] | length' livecheck.json)"
+          if [ "$outdated" != "0" ]; then
+            echo "::error::${outdated} formula(e) behind upstream — regenerate with scripts/brew-formula.mjs in tf-arch-diagram-generator or check TAP_GITHUB_TOKEN" >&2
+            exit 1
+          fi
