@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Set up Homebrew and tap this checkout
         id: brew
-        uses: Homebrew/actions/setup-homebrew@a657b8b0cd35d0f65cce41fce9b24cf054b49869
+        uses: Homebrew/actions/setup-homebrew@3cdb78d0f62ad29dd32de765782654f4eedea607
 
       - name: Show tap information
         run: |
@@ -59,13 +59,12 @@ jobs:
       matrix:
         os:
           - macos-latest
-          - macos-15-intel
           - ubuntu-24.04
 
     steps:
       - name: Set up Homebrew and tap this checkout
         id: brew
-        uses: Homebrew/actions/setup-homebrew@a657b8b0cd35d0f65cce41fce9b24cf054b49869
+        uses: Homebrew/actions/setup-homebrew@3cdb78d0f62ad29dd32de765782654f4eedea607
 
       - name: List formulae
         id: formulae
@@ -119,7 +118,7 @@ jobs:
     steps:
       - name: Set up Homebrew and tap this checkout
         id: brew
-        uses: Homebrew/actions/setup-homebrew@a657b8b0cd35d0f65cce41fce9b24cf054b49869
+        uses: Homebrew/actions/setup-homebrew@3cdb78d0f62ad29dd32de765782654f4eedea607
 
       - name: Brew livecheck
         run: |
