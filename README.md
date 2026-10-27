@@ -3,6 +3,10 @@
 [![CI](https://github.com/mchittineni/homebrew-tap/actions/workflows/ci.yml/badge.svg)](https://github.com/mchittineni/homebrew-tap/actions/workflows/ci.yml)
 [![tf-arch on npm](https://img.shields.io/npm/v/tf-arch-diagram-generator?label=tf-arch)](https://www.npmjs.com/package/tf-arch-diagram-generator)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=000000)](https://buymeacoffee.com/mchittineni)
+[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-24292F?style=for-the-badge&logo=githubsponsors&logoColor=EA4AAA)](https://github.com/sponsors/mchittineni)
 
 Homebrew formulae for [mchittineni](https://github.com/mchittineni)'s tools.
 
